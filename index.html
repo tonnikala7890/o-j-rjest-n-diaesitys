@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="fi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O-Järjestö — Virallinen 10-sivuinen 4K Interaktiivinen Sivusto</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="relative flex flex-col justify-between select-none bg-slate-950 text-slate-100">
+
+
+  <!-- AMBIENT 4K PARTICLE BACKGROUND CANVAS -->
+  <canvas id="ambientCanvas" class="fixed inset-0 pointer-events-none z-0" width="948" height="828"></canvas>
+
+  <!-- TORNADO VORTEX TRANSITION OVERLAY -->
+  <div id="tornadoOverlay" class="fixed inset-0 pointer-events-none z-50 opacity-0 transition-opacity duration-300 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+    <canvas id="tornadoCanvas" class="absolute inset-0 w-full h-full"></canvas>
+    <div class="relative z-10 flex flex-col items-center">
+      <i class="fa-solid fa-tornado text-7xl sm:text-8xl text-sky-400 spin-tornado drop-shadow-[0_0_35px_rgba(56,189,248,0.9)]"></i>
+      <p class="mt-4 font-display font-extrabold text-xl sm:text-3xl tracking-widest uppercase text-white drop-shadow-[0_0_20px_rgba(56,189,248,0.9)]">
+        🌪️ TORNADO-SIIRTYMÄ 🌪️
+      </p>
+    </div>
+  </div>
+
+  <!-- FLOATING CORNER TORNADO BADGE ON EVERY PAGE -->
+  <button onclick="nextSlide()" title="Klikkaa tornadoa vaihtaaksesi sivua!" class="fixed bottom-16 right-5 z-40 glass-panel px-4 py-2 rounded-full border border-sky-400/50 flex items-center gap-2.5 shadow-lg shadow-sky-500/25 hover:scale-105 transition cursor-pointer group">
+    <i class="fa-solid fa-tornado text-sky-400 text-xl spin-tornado"></i>
+    <div class="text-left">
+      <div class="text-[10px] font-bold uppercase tracking-wider text-sky-300">Tornado-voima</div>
+      <div class="text-xs font-extrabold text-white group-hover:text-amber-300 transition">Seuraava sivu ▶</div>
+    </div>
+  </button>
+
+  <!-- ==========================================
+       TOP NAVIGATION & DIRECT DOWNLOAD BAR
+       ========================================== -->
+  <header class="relative z-30 flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-2.5 glass-panel border-b border-white/15">
+    <!-- Left: Brand + Tornado Emblem -->
+    <div class="flex items-center gap-2.5">
+      <button onclick="triggerManualTornado()" title="Laukaise Tornado-pyörre!" class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-900 flex items-center justify-center shadow-lg shadow-sky-500/30 border border-sky-300/40 hover:scale-105 transition cursor-pointer">
+        <i class="fa-solid fa-tornado text-white text-lg spin-tornado"></i>
+      </button>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-display font-extrabold tracking-wider text-sm sm:text-base text-white">O-JÄRJESTÖ</span>
+          <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">4K 10-SIVUA</span>
+        </div>
+        <p id="headerSlideSubtitle" class="text-[11px] text-sky-300/90 hidden xl:block">Sivu 1: Virallinen kutsukirje</p>
+      </div>
+    </div>
+
+    <!-- CENTER: PROMINENT ONE-CLICK DOWNLOAD BUTTONS -->
+    <div class="flex flex-wrap items-center gap-2">
+      <button onclick="downloadStandaloneHTML()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-slate-950 font-display font-extrabold text-xs sm:text-sm shadow-lg shadow-emerald-500/30 flex items-center gap-2 transition transform hover:-translate-y-0.5 cursor-pointer border border-emerald-300">
+        <i class="fa-solid fa-download text-sm"></i>
+        <span>📥 LATAA SIVUSTO KONEELLE (.HTML)</span>
+      </button>
+
+      <button onclick="downloadWebsiteZip()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-display font-extrabold text-xs sm:text-sm shadow-lg shadow-sky-500/30 flex items-center gap-2 transition transform hover:-translate-y-0.5 cursor-pointer border border-sky-300/50">
+        <i class="fa-solid fa-file-zipper text-sm"></i>
+        <span>📦 LATAA KANSIO (.ZIP)</span>
+      </button>
+
+      <button onclick="openDownloadHubModal()" class="px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/50 font-display font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+        <i class="fa-solid fa-folder-tree"></i>
+        <span class="hidden md:inline">Kaikki tiedostot &amp; Koodi</span>
+      </button>
+    </div>
+
+    <!-- Right: Audio & Slide Counter -->
+    <div class="flex items-center gap-2">
+      <button id="audioToggleBtn" onclick="toggleAudio()" class="px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-white/10 flex items-center gap-1.5 transition cursor-pointer">
+        <i id="audioIcon" class="fa-solid fa-volume-high text-emerald-400"></i>
+        <span class="hidden lg:inline" id="audioLabel">Äänet</span>
+      </button>
+
+      <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-amber-400/40 font-display font-bold text-xs sm:text-sm text-amber-300">
+        DIA <span id="slideCounterNum">1</span> / 10
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       MAIN SLIDE VIEWPORT (10 SLIDES)
+       ========================================== -->
+  <main id="slideViewport" class="relative z-20 flex-1 w-full overflow-hidden flex items-center justify-center p-2 sm:p-5">
+
+    <!-- ==========================================
+         SIVU 1: VIRALLINEN KUTSUKIRJE + LATAUSKESKUS
+         ========================================== -->
+    <section id="slide-1" class="slide-item w-full max-w-6xl h-full flex items-center justify-center tornado-enter">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll flex flex-col lg:flex-row items-stretch gap-5 p-2">
+        
+        <!-- Left: Realistic Paper Invitation Letter -->
+        <div class="luxury-letter w-full lg:w-7/12 rounded-2xl p-6 sm:p-8 text-slate-900 flex flex-col justify-between">
+          <!-- Top Letterhead -->
+          <div class="flex items-start justify-between border-b-2 border-amber-800/30 pb-3 mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center font-serif-luxury font-bold text-2xl shadow-md border-2 border-amber-500">
+                O
+              </div>
+              <div>
+                <p class="text-[11px] uppercase tracking-widest font-bold text-amber-900 flex items-center gap-1.5">
+                  <i class="fa-solid fa-tornado text-sky-700 spin-tornado"></i> O-JÄRJESTÖ • HALLINTO (O.ADMINISTRATION)
+                </p>
+                <h2 class="font-serif-luxury font-bold text-lg sm:text-xl text-slate-900">VIRALLINEN KUTSUKIRJE</h2>
+              </div>
+            </div>
+            <div class="text-right text-xs text-slate-700 font-medium">
+              <p>Asiakirja: <span class="font-bold">#OJ-2026-001</span></p>
+              <p>Tampere, Suomi</p>
+            </div>
+          </div>
+
+          <!-- Letter Body -->
+          <div class="space-y-3 my-auto">
+            <h1 class="font-letter font-bold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+              Tervetuloa O-järjestöön!
+            </h1>
+
+            <p class="font-letter text-sm sm:text-base leading-relaxed text-slate-800">
+              Hyvä vastaanottaja,
+            </p>
+
+            <p class="font-letter text-sm sm:text-base leading-relaxed text-slate-800">
+              Sinut on virallisesti kutsuttu mukaan <strong>O-järjestön (o.järjestö)</strong> toimintaan! Järjestössämme voit luoda omia yrityksiä (kuten kojun, kahvilan tai elokuvatuotannon), lukea ja laatia virallisia raportteja sekä osallistua kuukausikokouksiimme.
+            </p>
+
+            <!-- Highlighted Call to Action Phone Box inside Letter -->
+            <div class="my-3 p-4 rounded-xl bg-slate-950 text-amber-50 border-2 border-amber-500 shadow-xl">
+              <p class="text-[11px] uppercase tracking-widest text-amber-300 font-bold mb-1">
+                <i class="fa-solid fa-phone-volume mr-1.5 animate-bounce"></i> Virallinen ilmoittautuminen • Timin suora numero
+              </p>
+              <p class="text-base sm:text-lg font-bold text-white">
+                Jos olet kiinnostunut, soita numeroon:
+              </p>
+              <div class="mt-1.5 flex flex-wrap items-center justify-between gap-2">
+                <a href="tel:+358449854292" class="font-display font-extrabold text-2xl sm:text-3xl text-amber-400 hover:underline tracking-wide" target="_blank" rel="noopener noreferrer">
+                  +358 44 9854292
+                </a>
+                <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-xs font-bold text-amber-200">
+                  <i class="fa-solid fa-user-check mr-1"></i> Timin numero
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Signature & Interactive Wax Seal -->
+          <div class="pt-3 mt-2 flex items-center justify-between border-t border-amber-900/25">
+            <div>
+              <p class="text-xs text-slate-600 uppercase tracking-wider">Kunnioittavasti,</p>
+              <p class="font-letter italic font-bold text-lg sm:text-xl text-slate-900">Timi &amp; O-järjestön Johtokunta</p>
+              <p class="text-xs text-amber-900 font-bold">Timin numero: +358 44 9854292 • ”Lue aina pienellä printattu teksti”</p>
+            </div>
+
+            <!-- Wax Seal -->
+            <div class="wax-seal w-16 h-16 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center text-center select-none shrink-0">
+              <i class="fa-solid fa-tornado text-amber-200 text-xs mb-0.5"></i>
+              <span class="font-serif-luxury font-bold text-[8px] sm:text-[9px] text-amber-100 leading-none">O-JÄRJESTÖ</span>
+              <span class="text-[7px] sm:text-[8px] text-amber-200/90 font-semibold mt-0.5">SINETTI</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Direct Download Box & Controls -->
+        <div class="w-full lg:w-5/12 flex flex-col justify-between gap-3">
+          <div class="glass-gold rounded-2xl p-5 space-y-3 border-2 border-emerald-400/50">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-extrabold uppercase">
+                <i class="fa-solid fa-circle-check mr-1"></i> Suora lataus omalle koneelle
+              </span>
+              <span class="text-xs text-amber-300 font-bold">Ei vaadi ZIP-purkua!</span>
+            </div>
+
+            <h3 class="font-display font-extrabold text-lg sm:text-xl text-white">
+              Lataa tämä 4K-verkkosivusto tiedostona:
+            </h3>
+
+            <!-- Primary Single-File HTML Download Button -->
+            <button onclick="downloadStandaloneHTML()" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-display font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition transform hover:-translate-y-0.5 cursor-pointer">
+              <i class="fa-solid fa-file-arrow-down text-lg"></i>
+              <span>📥 LATAA KOKO SIVUSTO (.HTML)</span>
+            </button>
+
+            <!-- Secondary ZIP Folder Download Button -->
+            <button onclick="downloadWebsiteZip()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white font-display font-bold text-xs sm:text-sm shadow-lg flex items-center justify-center gap-2 transition cursor-pointer border border-sky-400/40">
+              <i class="fa-solid fa-box-archive"></i>
+              <span>📦 LATAA SIVUSTON KANSIO (.ZIP)</span>
+            </button>
+
+            <!-- Individual Files Row -->
+            <div class="pt-1">
+              <p class="text-[11px] text-slate-300 font-semibold mb-1.5">📄 Tai lataa kansion tiedostot erikseen:</p>
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="downloadSinglePart('index.html')" class="py-2 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-sky-300 border border-sky-500/30 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer">
+                  <i class="fa-brands fa-html5 text-orange-400"></i> index.html
+                </button>
+                <button onclick="downloadSinglePart('style.css')" class="py-2 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-sky-300 border border-sky-500/30 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer">
+                  <i class="fa-brands fa-css3-alt text-sky-400"></i> style.css
+                </button>
+                <button onclick="downloadSinglePart('script.js')" class="py-2 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-sky-300 border border-sky-500/30 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer">
+                  <i class="fa-brands fa-js text-amber-400"></i> script.js
+                </button>
+              </div>
+            </div>
+
+            <!-- Copy Full HTML Code Fallback Button -->
+            <button onclick="copyFullWebsiteCode()" class="w-full py-2 px-3 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-amber-200 border border-amber-400/30 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer">
+              <i class="fa-solid fa-clipboard-check"></i>
+              <span id="copyCodeBtnText">📋 Kopioi koko HTML-koodi leikepöydälle</span>
+            </button>
+          </div>
+
+          <!-- Next Slide Button Card -->
+          <div onclick="changeSlide(2)" class="glass-panel rounded-xl p-3.5 flex items-center justify-between hover:border-sky-400 transition cursor-pointer group">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-tornado text-sky-400 text-xl spin-tornado"></i>
+              <div>
+                <p class="text-[11px] text-slate-400">Jatka esitystä tornadolla:</p>
+                <p class="text-sm font-bold text-white group-hover:text-sky-300 transition">Sivu 2: Tietoa O-järjestöstä ▶</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-arrow-right text-sky-400 group-hover:translate-x-1 transition"></i>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 2: TIETOA O-JÄRJESTÖSTÄ (VERKKOSIVUN TIEDOT)
+         ========================================== -->
+    <section id="slide-2" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 2 / 10 • Lähde: yritysjarjesto-c84810.webnode.fi</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              Mikä on O-järjestö (<span class="text-sky-400">o.järjestö</span>)?
+            </h2>
+          </div>
+
+          <a href="https://yritysjarjesto-c84810.webnode.fi/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 text-xs sm:text-sm font-bold flex items-center gap-2 transition">
+            <i class="fa-solid fa-globe"></i>
+            <span>yritysjarjesto-c84810.webnode.fi</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 my-auto">
+          <!-- Column 1: Logo & Quote -->
+          <div class="glass-gold rounded-2xl p-5 flex flex-col justify-between space-y-3">
+            <div class="w-full h-36 rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-inner">
+              <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000002-e8a50e8a53/O.j%C3%A4rjest%C3%B6n%20logo.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/400x200/ffffff/0f172a?text=o.jarjesto'" alt="O-järjestön virallinen logo" class="max-h-full object-contain">
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg text-amber-300 mb-1">Virallinen esittely</h3>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                ”Luo yrityksiä täällä, täältä myös löydät raportteja ja voit myös tehdä niitä itse. Sivustomme on taas päivittynyt!”
+              </p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/90 border border-amber-400/40 text-xs text-amber-200 font-semibold">
+              <i class="fa-solid fa-magnifying-glass mr-1 text-amber-400"></i>
+              ”Lue aina pienellä printattu teksti.”
+            </div>
+          </div>
+
+          <!-- Column 2: Tietoa meistä & Examples -->
+          <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-3 border border-sky-500/30">
+            <div class="space-y-2">
+              <span class="px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold">
+                <i class="fa-solid fa-building-user mr-1"></i> Tietoa meistä
+              </span>
+              <h3 class="font-display font-bold text-xl text-white">Luo sinäkin oma yritys!</h3>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Olemme tehneet paljon yrityksiä! Hyviä yritysesimerkkejä verkkosivuiltamme ovat:
+              </p>
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-center">
+                  <i class="fa-solid fa-store text-amber-400 text-xl mb-1"></i>
+                  <p class="text-xs font-bold text-white">Koju</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-center">
+                  <i class="fa-solid fa-mug-hot text-sky-400 text-xl mb-1"></i>
+                  <p class="text-xs font-bold text-white">Kahvila</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-center">
+                  <i class="fa-solid fa-film text-purple-400 text-xl mb-1"></i>
+                  <p class="text-xs font-bold text-white">Elokuvatuotanto</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/50 text-xs text-rose-100 space-y-1">
+              <p class="font-extrabold text-rose-300 uppercase"><i class="fa-solid fa-triangle-exclamation mr-1"></i> HUOM: Muista tämä:</p>
+              <p class="font-semibold">”Tämä yritys ei ole miljoona bisnes! Tämä on lasten perustama järjestö!”</p>
+              <p class="text-[11px] text-rose-300/80">© 2026 o.administration</p>
+            </div>
+          </div>
+
+          <!-- Column 3: Official Image & Forms -->
+          <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-3">
+            <div class="w-full h-40 rounded-xl bg-white p-2 flex items-center justify-center overflow-hidden">
+              <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000012-c1e0ec1e10/rhrn.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/400x220/0f172a/38bdf8?text=O-Jarjesto'" alt="O-järjestön virallinen kuva" class="max-h-full object-contain">
+            </div>
+            <div class="space-y-1.5 text-xs">
+              <p class="font-bold text-slate-300 mb-1">Viralliset lomakkeet verkkosivulla:</p>
+              <a href="https://forms.office.com/r/YuMMrDcXJC" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-sky-300 font-semibold transition">
+                <span><i class="fa-solid fa-plus-circle mr-1.5"></i> Luo yritys (Microsoft Forms)</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </a>
+              <a href="https://forms.cloud.microsoft/r/XU99vihAA7" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 font-semibold transition">
+                <span><i class="fa-solid fa-award mr-1.5"></i> Yrityksen ylentäminen</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </a>
+              <a href="https://forms.office.com/r/UdQLp7AU6b" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 font-semibold transition">
+                <span><i class="fa-solid fa-users mr-1.5"></i> Osallistu o.järjestöön</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 3: RAPORTIT JA KUUKAUSIKOKOUKSET
+         ========================================== -->
+    <section id="slide-3" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 3 / 10 • O.Raportti &amp; Ajankohtaista</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              O-järjestön Raportit — <span class="text-emerald-400">”Raportit on taas päivittynyt!”</span>
+            </h2>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
+            <i class="fa-solid fa-check-double mr-1"></i> Virallinen Raporttiarkisto
+          </span>
+        </div>
+
+        <!-- Middle Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto items-center">
+          
+          <!-- Left 7 Cols: Meetings & Progress -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="glass-panel rounded-2xl p-5 space-y-3 border border-sky-400/30">
+              <h3 class="font-display font-bold text-lg text-amber-300 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check"></i> Ajankohtaista &amp; Kuukausikokoukset
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-white/10">
+                  <span class="text-xs font-bold text-sky-400 uppercase">Edellinen kokous</span>
+                  <p class="font-display font-extrabold text-2xl text-white mt-0.5">25.10.2026</p>
+                  <p class="text-xs text-slate-300 mt-1 italic">”Tänne ilmestyy uus raportti ehkä huomenna (eli torstaina).”</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/40">
+                  <span class="text-xs font-bold text-emerald-400 uppercase">Seuraava kuukausikokous</span>
+                  <p class="font-display font-extrabold text-2xl text-emerald-300 mt-0.5">14.11.2026</p>
+                  <p class="text-xs text-slate-300 mt-1">Lisätietoja uusimmassa raportissa ja arkistossa.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Report Bars -->
+            <div class="glass-panel rounded-2xl p-5 space-y-3">
+              <h4 class="font-display font-bold text-sm uppercase tracking-wider text-slate-300">Raporttien valmiusaste</h4>
+              <div class="space-y-2.5 text-xs font-bold">
+                <div>
+                  <div class="flex justify-between mb-1"><span>Uusin kuukausiraportti (o.raportti)</span><span class="text-sky-400">100 %</span></div>
+                  <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-sky-500 to-cyan-300 rounded-full" style="width:100%"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Tampereen lasten yritys raportit RY</span><span class="text-emerald-400">96 %</span></div>
+                  <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full" style="width:96%"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>RM yhtiöt — Neljännesvuosikatsaus</span><span class="text-amber-400">91 %</span></div>
+                  <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full" style="width:91%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 5 Cols: Official o.raportti image & Sway Links -->
+          <div class="lg:col-span-5 glass-gold rounded-2xl p-5 space-y-3">
+            <div class="w-full h-36 rounded-xl bg-white p-2 flex items-center justify-center overflow-hidden">
+              <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000008-6bf376bf39/o.report.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/400x180/ffffff/0f172a?text=o.raportti'" alt="o.raportti logo" class="max-h-full object-contain">
+            </div>
+
+            <div class="space-y-2 text-xs sm:text-sm">
+              <a href="https://sway.cloud.microsoft/rb6SVVIWCYawVdKE" target="_blank" rel="noopener noreferrer" class="w-full p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-sky-400/40 flex items-center justify-between text-white font-bold transition">
+                <span><i class="fa-solid fa-file-lines text-sky-400 mr-2"></i>Uusin raportti (Sway)</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i>
+              </a>
+              <a href="http://sway.cloud.microsoft/jCbNtqj6VMIf2u4K" target="_blank" rel="noopener noreferrer" class="w-full p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 flex items-center justify-between text-slate-200 font-semibold transition">
+                <span><i class="fa-solid fa-clock-rotate-left text-amber-400 mr-2"></i>Edellinen raportti</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i>
+              </a>
+              <a href="https://yritysjarjesto-c84810.webnode.fi/raporttiarkisto/" target="_blank" rel="noopener noreferrer" class="w-full p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 flex items-center justify-between text-slate-200 font-semibold transition">
+                <span><i class="fa-solid fa-box-archive text-emerald-400 mr-2"></i>Raporttiarkisto</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i>
+              </a>
+              <a href="https://sway.cloud.microsoft/" target="_blank" rel="noopener noreferrer" class="w-full p-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 flex items-center justify-between text-amber-200 font-bold transition">
+                <span><i class="fa-solid fa-pen-to-square text-amber-400 mr-2"></i>Luo oma raportti</span>
+                <i class="fa-solid fa-plus text-amber-300"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 4: INTERAKTIIVINEN TONNIKALA (RAIVOSTUU JA MURENEE!)
+         ========================================== -->
+    <section id="slide-4" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] glass-panel rounded-3xl p-5 sm:p-7 flex flex-col justify-between relative overflow-hidden border border-sky-500/40">
+        
+        <!-- Top Header & Rage Meter -->
+        <div class="relative z-20 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 4 / 10 • Interaktiivinen 4K Tonnikala</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white flex items-center gap-3">
+              <span>Tonnikala joka raivostuu ja murenee!</span>
+            </h2>
+          </div>
+
+          <!-- Rage Meter Bar -->
+          <div class="w-full sm:w-72 bg-slate-900/95 p-3 rounded-2xl border border-white/15">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-rose-400"><i class="fa-solid fa-fire-flame-curved mr-1"></i>RAIVOMITTARI</span>
+              <span id="tunaRagePercent" class="text-white">0 %</span>
+            </div>
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-white/10">
+              <div id="tunaRageBar" class="h-full bg-gradient-to-r from-amber-500 via-orange-600 to-rose-600 transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Tuna Arena -->
+        <div id="tunaArena" onclick="triggerTunaClick()" class="relative flex-1 my-3 rounded-2xl bg-gradient-to-b from-sky-950/60 via-slate-950/90 to-slate-950 border-2 border-sky-400/30 flex flex-col items-center justify-center overflow-hidden cursor-pointer group">
+          
+          <p id="tunaStatusBanner" class="text-sm sm:text-xl font-display font-extrabold text-amber-300 mb-4 px-5 py-2 rounded-full bg-slate-900/90 border border-amber-400/40 shadow-lg z-20 text-center">
+            👆 KLIKKAA TONNIKALAA! Se raivostuu silmittömästi ja murenee palasiksi!
+          </p>
+
+          <!-- Realistic 4K SVG Tuna Wrapper -->
+          <div id="tunaFishWrapper" class="relative z-10 transition-all duration-200 flex flex-col items-center">
+            <svg class="w-72 sm:w-[430px] h-auto drop-shadow-[0_20px_35px_rgba(2,132,199,0.5)] group-hover:scale-105 transition" viewBox="0 0 420 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="tunaGrad4K" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#0f172a"></stop>
+                  <stop offset="30%" stop-color="#0284c7"></stop>
+                  <stop offset="65%" stop-color="#38bdf8"></stop>
+                  <stop offset="100%" stop-color="#f1f5f9"></stop>
+                </linearGradient>
+              </defs>
+              <!-- Crescent Tail Fin -->
+              <path d="M350 105 L415 30 L388 105 L415 180 Z" fill="#0369a1" stroke="#38bdf8" stroke-width="2"></path>
+              <!-- First & Second Dorsal Fins -->
+              <path d="M145 52 L195 12 L218 55 Z" fill="#0284c7"></path>
+              <path d="M235 56 L270 25 L280 64 Z" fill="#f59e0b"></path>
+              <!-- Finlets -->
+              <polygon points="295,66 302,56 308,68" fill="#fbbf24"></polygon>
+              <polygon points="318,74 325,64 330,77" fill="#fbbf24"></polygon>
+              <polygon points="295,144 302,154 308,142" fill="#fbbf24"></polygon>
+              <polygon points="318,136 325,146 330,133" fill="#fbbf24"></polygon>
+              <!-- Ventral Fin -->
+              <path d="M180 155 L220 192 L235 152 Z" fill="#64748b"></path>
+              <!-- Hydrodynamic Torpedo Body -->
+              <path d="M18 105 C65 34, 225 32, 362 105 C225 178, 65 176, 18 105 Z" fill="url(#tunaGrad4K)" stroke="#e2e8f0" stroke-width="2.5"></path>
+              <!-- Metallic Gold Lateral Line -->
+              <path d="M48 105 Q190 82 350 105" stroke="#fde047" stroke-width="4.5" stroke-linecap="round" opacity="0.85"></path>
+              <!-- Pectoral Blade Fin -->
+              <path d="M108 110 L172 136 L122 148 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"></path>
+              <!-- Gill Plate -->
+              <path d="M88 74 Q105 105 88 136" stroke="#0f172a" stroke-width="4" fill="none"></path>
+              <!-- Eye -->
+              <circle cx="56" cy="94" r="11" fill="#ffffff" stroke="#0f172a" stroke-width="2"></circle>
+              <circle id="tunaEyePupil" cx="54" cy="94" r="5.5" fill="#0f172a"></circle>
+              <!-- Fierce Brow -->
+              <path d="M40 78 L72 88" stroke="#ef4444" stroke-width="5" stroke-linecap="round"></path>
+            </svg>
+            <span class="mt-2 text-xs text-sky-200/90 font-semibold tracking-wider uppercase">
+              Atlantin Sinievätonnikala (Thunnus thynnus) • Huippunopeus 70 km/h
+            </span>
+          </div>
+
+          <!-- Reset Button (Shown after shattering) -->
+          <button id="tunaResetBtn" onclick="resetTuna(event)" class="hidden relative z-30 mt-4 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-display font-extrabold text-sm shadow-xl hover:scale-105 transition cursor-pointer">
+            <i class="fa-solid fa-rotate-right mr-2"></i>Kokoa tonnikala uudelleen!
+          </button>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+          <span><i class="fa-solid fa-Volume-high text-sky-400 mr-1"></i> Klikkaus aktivoi raivokohtauksen, räjähdysäänen ja 55 lentävää palasta!</span>
+          <button onclick="triggerTunaClick()" class="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold cursor-pointer">
+            💥 Räjäytä tonnikala tästä
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 5: O-JÄRJESTÖN YHTIÖT (VERKKOSIVUN TIEDOT)
+         ========================================== -->
+    <section id="slide-5" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">
+            <i class="fa-solid fa-tornado spin-tornado"></i>
+            <span>Sivu 5 / 10 • Yhtiöt &amp; Yhteisöt verkkosivulta (yritysjarjesto-c84810.webnode.fi)</span>
+          </div>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+            O-järjestön viralliset yhtiöt ja yksiköt
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-auto">
+          <!-- Company 1 -->
+          <div class="glass-gold rounded-2xl p-4 flex flex-col justify-between hover:-translate-y-1 transition">
+            <div>
+              <div class="w-full h-32 rounded-xl bg-white p-2 flex items-center justify-center mb-3">
+                <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000002-e8a50e8a53/O.j%C3%A4rjest%C3%B6n%20logo.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/300x160/ffffff/0f172a?text=o.jarjesto'" alt="o.järjestö" class="max-h-full object-contain">
+              </div>
+              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Kattojärjestö</span>
+              <h3 class="font-display font-bold text-lg text-white mt-1">1. o.järjestö</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Keskushallinto (<em>o.administration</em>), jossa jäsenet luovat uusia yrityksiä ja ylentävät toimintaansa.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/10 text-[11px] text-amber-300 font-semibold">
+              Johto: Timi (+358 44 9854292)
+            </div>
+          </div>
+
+          <!-- Company 2 -->
+          <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between hover:-translate-y-1 transition border border-sky-400/30">
+            <div>
+              <div class="w-full h-32 rounded-xl bg-white p-2 flex items-center justify-center mb-3">
+                <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000008-6bf376bf39/o.report.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/300x160/ffffff/0284c7?text=o.raportti'" alt="o.raportti" class="max-h-full object-contain">
+              </div>
+              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">Raportointiyksikkö</span>
+              <h3 class="font-display font-bold text-lg text-white mt-1">2. o.raportti</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Vastaa kuukausiraporteista, Microsoft Sway -julkaisuista sekä virallisesta Raporttiarkistosta.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/10 text-[11px] text-sky-300 font-semibold">
+              Päivitetty: Raporttiarkisto
+            </div>
+          </div>
+
+          <!-- Company 3 -->
+          <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between hover:-translate-y-1 transition border border-purple-400/30">
+            <div>
+              <div class="w-full h-32 rounded-xl bg-white p-2 flex items-center justify-center mb-3">
+                <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000006-0406104063/RM%20yhti%C3%B6t.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/300x160/ffffff/7e22ce?text=RM+yhtiot'" alt="RM yhtiöt" class="max-h-full object-contain">
+              </div>
+              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">Yritysrypäs</span>
+              <h3 class="font-display font-bold text-lg text-white mt-1">3. RM yhtiöt</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                O-järjestön virallisilla sivuilla esitelty monialainen yritys- ja liiketoimintakokonaisuus.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/10 text-[11px] text-purple-300 font-semibold">
+              Virallinen jäsenyhtiö
+            </div>
+          </div>
+
+          <!-- Company 4 -->
+          <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between hover:-translate-y-1 transition border border-emerald-400/30">
+            <div>
+              <div class="w-full h-32 rounded-xl bg-white p-2 flex items-center justify-center mb-3">
+                <img src="https://fbd565d4fd.cbaul-cdnwnd.com/7f04f8d8970d70153f134f7b33cc81b9/200000010-cb775cb777/Tampereen%20lasten%20yritys%20raportit%20RY.png?ph=fbd565d4fd" onerror="this.src='https://placehold.co/300x160/ffffff/059669?text=Tampereen+RY'" alt="Tampereen lasten yritys raportit RY" class="max-h-full object-contain">
+              </div>
+              <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Yhdistystoiminta</span>
+              <h3 class="font-display font-bold text-base text-white mt-1">4. Tampereen lasten yritys raportit RY</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Tampereen alueellinen raportti- ja yritysyhteisö, joka kokoaa lasten yritykset yhteen.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/10 text-[11px] text-emerald-300 font-semibold">
+              Kotipaikka: Tampere
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 6: IPHONE 18 PRO MAX (4K ESITTELY & KUVAT)
+         ========================================== -->
+    <section id="slide-6" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 6 / 10 • Huipputeknologia &amp; 4K-kuvat</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              iPhone 18 Pro Max — <span class="text-amber-300">Tulevaisuuden Lippulaiva</span>
+            </h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold">
+            Grade 5 Titanium • A20 Pro (2 nm)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto items-center">
+          <!-- Left: Specs Cards -->
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div class="glass-panel rounded-2xl p-4 border border-sky-400/30">
+              <i class="fa-solid fa-microchip text-2xl text-sky-400 mb-2"></i>
+              <h3 class="font-display font-bold text-base text-white">A20 Pro (2 nm) &amp; 16 Gt RAM</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Maailman ensimmäinen 2 nanometrin prosessori ja 45 biljoonan operaation Neural Engine tekoälylle.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-amber-400/30">
+              <i class="fa-solid fa-camera-retro text-2xl text-amber-400 mb-2"></i>
+              <h3 class="font-display font-bold text-base text-white">3x 48 MP Pro-Kamerat</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                48 MP pääkamera, 48 MP ultralaajakulma ja 48 MP Tetraprism-periskooppi (10x optinen zoom &amp; 8K ProRes).
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-emerald-400/30">
+              <i class="fa-solid fa-mobile-screen-button text-2xl text-emerald-400 mb-2"></i>
+              <h3 class="font-display font-bold text-base text-white">6,9" Super Retina XDR</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                1–120 Hz ProMotion OLED -näyttö, 3000 nitin maksimikirkkaus sekä täysin näytönalainen Face ID.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-purple-400/30">
+              <i class="fa-solid fa-battery-full text-2xl text-purple-400 mb-2"></i>
+              <h3 class="font-display font-bold text-base text-white">Titaanirunko &amp; 36h Akku</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Kevyt ja äärimmäisen kestävä harjattu titaanikuori, Ceramic Shield 2 ja MagSafe-pikalataus.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Dual 4K Photo Showcase -->
+          <div class="lg:col-span-5 grid grid-cols-2 gap-3">
+            <div class="col-span-2 h-48 rounded-2xl overflow-hidden border border-white/20 relative group">
+              <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" onerror="this.src='https://placehold.co/600x350/0f172a/38bdf8?text=iPhone+18+Pro+Max'" alt="iPhone 18 Pro Max Titanium" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute bottom-2 left-2 px-2.5 py-1 rounded bg-slate-950/80 text-[11px] font-bold text-amber-300">
+                Desert &amp; Natural Titanium
+              </div>
+            </div>
+            <div class="h-28 rounded-xl overflow-hidden border border-white/15">
+              <img src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&amp;fit=crop&amp;w=600&amp;q=80" onerror="this.src='https://placehold.co/300x200/1e293b/ffffff?text=Näyttö'" alt="Super Retina XDR" class="w-full h-full object-cover">
+            </div>
+            <div class="h-28 rounded-xl overflow-hidden border border-white/15">
+              <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&amp;fit=crop&amp;w=600&amp;q=80" onerror="this.src='https://placehold.co/300x200/1e293b/fbbf24?text=48MP+Kamera'" alt="48MP Pro Camera System" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 7: SAMMEN KAVIAARI (KAIKKI TIEDOT & KUVAT)
+         ========================================== -->
+    <section id="slide-7" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 7 / 10 • Kuningaskala Sampi &amp; Musta Kaviaari</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              Sammen Kaviaari — <span class="text-amber-300">Meren Mustaa Kultaa</span>
+            </h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold">
+            Acipenseridae • 200 miljoonaa vuotta
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-auto items-center">
+          <!-- Left: Comprehensive Facts -->
+          <div class="lg:col-span-7 space-y-3.5">
+            <div class="glass-gold rounded-2xl p-4">
+              <h3 class="font-display font-bold text-lg text-amber-300 mb-1">🐟 Mikä on sampi (Acipenseridae)?</h3>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                Sampi on esihistoriallinen luukala, joka on elänyt maapallolla jo yli <strong>200 miljoonan vuoden ajan</strong>. Sampi voi elää yli 100-vuotiaaksi, ja suurin kitasampi (Beluga) voi kasvaa jopa 5–7 metrin pituiseksi ja painaa yli 1 000 kiloa.
+              </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 space-y-2">
+              <h3 class="font-display font-bold text-base text-sky-300">🥄 Kaikki aidosta sammen kaviaarista:</h3>
+              <ul class="text-xs sm:text-sm text-slate-200 space-y-1.5 list-disc pl-5">
+                <li><strong>Beluga-kaviaari (Kitasampi):</strong> Maailman kallein ja suurirakeisin kaviaari. Väriltään hopeanharmaa ja maultaan täyteläisen voinpehmeä.</li>
+                <li><strong>Oscietra-kaviaari (Venäjänsampi):</strong> Kultaisen tai tummanruskea sävy ja hienostunut, pähkinäinen jälkimaku.</li>
+                <li><strong>Sevruga-kaviaari (Tähtisampi):</strong> Pienirakeinen, tumma ja intensiivisen merellinen herkku.</li>
+                <li><strong>Tarjoilu &amp; Helmiäislusikka:</strong> Aito <em>Malossol</em>-kaviaari tarjoillaan aina murskatun jään päältä <strong>helmiäis-, luu- tai kultalusikalla</strong>, sillä tavallinen teräs tai hopea hapettaa mätiä ja antaa sille metallisen sivumaun!</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Right: Sturgeon & Black Caviar Photos -->
+          <div class="lg:col-span-5 space-y-3">
+            <div class="rounded-2xl overflow-hidden border border-amber-400/40 bg-slate-900">
+              <img src="https://images.pexels.com/photos/29452930/pexels-photo-29452930/free-photo-of-sturgeon-swimming-in-natural-habitat-underwater.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" onerror="this.src='https://placehold.co/600x250/0f172a/38bdf8?text=Kuningaskala+Sampi'" alt="Sampi vedessä" class="w-full h-40 object-cover">
+              <p class="p-2 text-center text-xs font-bold text-sky-300">Elävä sampi (Acipenser) luonnollisessa elinympäristössään</p>
+            </div>
+
+            <div class="rounded-2xl overflow-hidden border border-amber-400/40 bg-slate-900">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&amp;fit=crop&amp;w=800&amp;q=80" onerror="this.src='https://placehold.co/600x250/1e1b18/fbbf24?text=Musta+Sammen+Kaviaari'" alt="Musta kaviaari" class="w-full h-40 object-cover">
+              <p class="p-2 text-center text-xs font-bold text-amber-300">Musta sammen helmi-kaviaari jäiden päällä tarjoiltuna</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 8: HÖH ÖÖ – KALKKUNAN SISÄLTÄ!
+         ========================================== -->
+    <section id="slide-8" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 8 / 10 • Erikoislähetys suoraan uunista</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              Höh öö — <span class="text-amber-400">Kirjoitettu kalkkunan sisältä!</span>
+            </h2>
+          </div>
+          <button onclick="playGobbleSound()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-extrabold text-xs cursor-pointer">
+            🦃 Kuuntele viesti kalkkunan sisältä!
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-auto items-center">
+          <div class="glass-gold rounded-3xl p-8 text-center space-y-4 border-2 border-dashed border-amber-400">
+            <div class="text-6xl animate-bounce">🦃💬</div>
+            <h1 class="font-display font-black text-5xl sm:text-6xl text-amber-300 tracking-wider drop-shadow-[0_5px_20px_rgba(245,158,11,0.5)]">
+              ”HÖH ÖÖ!”
+            </h1>
+            <p class="font-display font-bold text-xl sm:text-2xl text-white">
+              Terveisiä suoraan kalkkunan sisältä!
+            </p>
+            <p class="text-sm sm:text-base text-slate-200 leading-relaxed">
+              Tämä sivu on kirjoitettu suoraan juhlakalkkunan sisältä käsin. Täällä kalkkunan uumenissa on lämmintä, rapeaa ja hieman pimeää, mutta O-järjestön tornado-yhteys toimii täydellisesti!
+            </p>
+          </div>
+
+          <div class="rounded-3xl overflow-hidden border-2 border-amber-500/40 shadow-2xl bg-slate-900">
+            <img src="https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" onerror="this.src='https://placehold.co/700x450/451a03/fde68a?text=Kalkkunan+Sisalta:+Hoh+oo!'" alt="Paistettu kalkkuna" class="w-full h-80 object-cover">
+            <div class="p-3 bg-slate-950 text-center text-xs font-bold text-amber-300">
+              📍 Havaintopiste: Paistetun kalkkunan sisätila — ”Höh öö!”
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 9: KATTAVA YHTEENVETO (SIVUT 1–8)
+         ========================================== -->
+    <section id="slide-9" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] overflow-y-auto slide-scroll glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-4">
+        
+        <div class="border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-400 mb-1">
+            <i class="fa-solid fa-tornado spin-tornado"></i>
+            <span>Sivu 9 / 10 • Kokonaiskatsaus</span>
+          </div>
+          <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+            Yhteenveto — Kaikki mitä olemme käyneet läpi
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 my-auto">
+          <div class="glass-gold rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-amber-400">SIVU 1 • KUTSUKIRJE</span>
+            <h3 class="font-display font-bold text-base text-white">Tervetuloa O-järjestöön</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Virallinen kutsukirje. Jos olet kiinnostunut, soita Timin numeroon: <strong>+358 44 9854292</strong>.
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-sky-400">SIVU 2 • O-JÄRJESTÖ</span>
+            <h3 class="font-display font-bold text-base text-white">Luo omia yrityksiä</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Koju, kahvila tai elokuvatuotanto. Muista: lue pienellä printattu teksti, ei miljoonabisnes, lasten perustama järjestö!
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-emerald-400">SIVU 3 • RAPORTIT</span>
+            <h3 class="font-display font-bold text-base text-white">o.raportti &amp; Kokoukset</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Uusin ja edellinen Sway-raportti, Raporttiarkisto sekä kuukausikokoukset 25.10.2026 ja 14.11.2026.
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-rose-400">SIVU 4 • TONNIKALA</span>
+            <h3 class="font-display font-bold text-base text-white">Raivostuva tonnikala</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Klikkauksesta silmittömästi raivostuva ja kymmeniksi palasiksi räjähtävä sinievätonnikala.
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-purple-400">SIVU 5 • YHTIÖT</span>
+            <h3 class="font-display font-bold text-base text-white">4 Virallista Yksikköä</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              o.järjestö, o.raportti, RM yhtiöt sekä Tampereen lasten yritys raportit RY.
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-sky-300">SIVU 6 • IPHONE 18 PRO MAX</span>
+            <h3 class="font-display font-bold text-base text-white">Huippulippulaiva</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              A20 Pro (2 nm) -siru, 6,9" OLED-näyttö, 3x 48 MP kamerat ja kestävä titaanirunko.
+            </p>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-amber-300">SIVU 7 • SAMMEN KAVIAARI</span>
+            <h3 class="font-display font-bold text-base text-white">Beluga &amp; Oscietra</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              200 miljoonaa vuotta vanha sampi ja arvokas musta kaviaari helmiäislusikalla tarjoiltuna.
+            </p>
+          </div>
+
+          <div class="glass-gold rounded-2xl p-4 space-y-1.5">
+            <span class="text-xs font-extrabold text-orange-400">SIVU 8 &amp; TORNADO</span>
+            <h3 class="font-display font-bold text-base text-white">”Höh öö!” &amp; Pyörremyrsky</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Kalkkunan sisältä lähetetty viesti ja jokaisen sivun tornado-siirtymä. Seuraavaksi: Iso kala!
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SIVU 10: ISO KALA JOKA SYÖ SINUT – LOPPU!
+         ========================================== -->
+    <section id="slide-10" class="slide-item hidden w-full max-w-6xl h-full flex items-center justify-center">
+      <div class="w-full h-full max-h-[610px] glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden border-2 border-rose-500/50">
+        
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-rose-400 mb-1">
+              <i class="fa-solid fa-tornado spin-tornado"></i>
+              <span>Sivu 10 / 10 • Finaali • Klikkaa isoa kalaa!</span>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white">
+              Iso Kala — <span class="text-rose-400">Klikkaa kalaa, niin se syö sinut!</span>
+            </h2>
+          </div>
+          <span class="px-4 py-1.5 rounded-full bg-rose-600/30 border border-rose-400 text-rose-200 text-xs font-extrabold animate-pulse">
+            ⚠️ HENGENVAARALLINEN PETOKALA
+          </span>
+        </div>
+
+        <!-- Giant Predator Fish Arena -->
+        <div onclick="triggerGiantFishBite()" class="relative flex-1 my-3 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-black border-2 border-rose-500/40 flex flex-col items-center justify-center overflow-hidden cursor-pointer group">
+          
+          <p class="text-sm sm:text-lg font-display font-extrabold text-rose-300 mb-3 px-5 py-1.5 rounded-full bg-rose-950/90 border border-rose-400/40 z-20">
+            👇 KLIKKAA ISOA KALAA! SE HYÖKKÄÄ JA SYÖ SINUT SUORAAN KITAANSA! 👇
+          </p>
+
+          <div id="giantFishContainer" class="transition-transform duration-300 group-hover:scale-110 flex flex-col items-center">
+            <svg class="w-80 sm:w-[480px] h-auto drop-shadow-[0_0_45px_rgba(239,68,68,0.55)]" viewBox="0 0 480 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="abyssFishGrad" cx="40%" cy="50%" r="60%">
+                  <stop offset="0%" stop-color="#1e293b"></stop>
+                  <stop offset="65%" stop-color="#0f172a"></stop>
+                  <stop offset="100%" stop-color="#020617"></stop>
+                </radialGradient>
+              </defs>
+              <!-- Glowing Deep Sea Angler Lure -->
+              <path d="M165 55 Q80 5 42 48" stroke="#38bdf8" stroke-width="5" fill="none"></path>
+              <circle cx="40" cy="52" r="14" fill="#38bdf8"></circle>
+              <circle cx="40" cy="52" r="26" fill="#38bdf8" opacity="0.35"></circle>
+              <!-- Spiked Tail -->
+              <path d="M390 135 L468 60 L438 135 L468 210 Z" fill="#0f172a" stroke="#ef4444" stroke-width="3"></path>
+              <!-- Monster Body -->
+              <path d="M58 92 C140 15, 325 25, 405 135 C325 245, 140 250, 72 180 L160 140 Z" fill="url(#abyssFishGrad)" stroke="#64748b" stroke-width="3"></path>
+              <!-- Upper & Lower Razor Fangs -->
+              <path d="M62 94 L78 126 L94 98 L110 128 L126 102 L142 128 L156 110" stroke="#f8fafc" stroke-width="6" stroke-linejoin="round"></path>
+              <path d="M74 178 L90 146 L108 174 L124 144 L140 170 L154 144" stroke="#f8fafc" stroke-width="6" stroke-linejoin="round"></path>
+              <!-- Glowing Evil Eye -->
+              <circle cx="118" cy="80" r="15" fill="#ef4444"></circle>
+              <circle cx="114" cy="80" r="6" fill="#fef08a"></circle>
+            </svg>
+          </div>
+
+          <span class="text-xs text-slate-400 mt-2">Syvänmeren jättiläiskita • Klikkaa kalaa päättääksesi esityksen!</span>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       BOTTOM SLIDE BAR (1 TO 10 BUTTONS)
+       ========================================== -->
+  <footer class="relative z-30 flex items-center justify-between px-4 sm:px-8 py-2.5 glass-panel border-t border-white/10">
+    <button onclick="prevSlide()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition cursor-pointer">
+      <i class="fa-solid fa-chevron-left"></i>
+      <span class="hidden sm:inline">Edellinen</span>
+    </button>
+
+    <!-- 1-10 Numbered Slide Buttons -->
+    <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
+      <button onclick="changeSlide(1)" id="navDot-1" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/40 transition cursor-pointer">1</button>
+      <button onclick="changeSlide(2)" id="navDot-2" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">2</button>
+      <button onclick="changeSlide(3)" id="navDot-3" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">3</button>
+      <button onclick="changeSlide(4)" id="navDot-4" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">4</button>
+      <button onclick="changeSlide(5)" id="navDot-5" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">5</button>
+      <button onclick="changeSlide(6)" id="navDot-6" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">6</button>
+      <button onclick="changeSlide(7)" id="navDot-7" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">7</button>
+      <button onclick="changeSlide(8)" id="navDot-8" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">8</button>
+      <button onclick="changeSlide(9)" id="navDot-9" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">9</button>
+      <button onclick="changeSlide(10)" id="navDot-10" class="w-8 h-8 rounded-lg font-display font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">10</button>
+    </div>
+
+    <button onclick="nextSlide()" class="px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs sm:text-sm font-bold text-slate-950 flex items-center gap-2 transition cursor-pointer">
+      <span class="hidden sm:inline">Seuraava</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </footer>
+
+  <!-- ==========================================
+       FULLSCREEN "GIANT FISH ATE YOU" OVERLAY
+       ========================================== -->
+  <div id="eatenOverlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center text-center p-6 eaten-anim">
+    <div class="text-7xl sm:text-8xl mb-4 animate-bounce">🦈🦷💀</div>
+    <h1 class="font-display font-black text-5xl sm:text-7xl text-rose-500 tracking-wider drop-shadow-[0_0_40px_rgba(239,68,68,0.9)]">
+      ISO KALA SÖI SINUT!
+    </h1>
+    <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-4 mb-6">
+      LOPPU — KIITOS ESITYKSEN KATSOMISESTA!
+    </h2>
+    <p class="text-slate-300 text-sm sm:text-lg max-w-xl mb-8">
+      O-järjestö (o.administration) • Jos olet kiinnostunut, soita Timin numeroon: <strong class="text-amber-400">+358 44 9854292</strong>
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <button onclick="restartFromEaten()" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-display font-extrabold text-base shadow-2xl hover:scale-105 transition cursor-pointer">
+        🔄 Aloita esitys alusta (Sivu 1)
+      </button>
+      <button onclick="downloadStandaloneHTML()" class="px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-base shadow-2xl hover:scale-105 transition cursor-pointer">
+        📥 Lataa sivusto omalle koneelle (.HTML)
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       DOWNLOAD & CODE HUB MODAL
+       ========================================== -->
+  <div id="downloadHubModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/85 backdrop-blur-lg p-4">
+    <div class="glass-panel rounded-3xl max-w-3xl w-full p-6 sm:p-8 border border-sky-400/40 space-y-5 max-h-[90vh] overflow-y-auto slide-scroll">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-cloud-arrow-down text-2xl text-emerald-400"></i>
+          <div>
+            <h3 class="font-display font-extrabold text-xl text-white">Lataus- ja Koodikeskus</h3>
+            <p class="text-xs text-slate-300">Valitse haluamasi lataustapa tai kopioi koodi suoraan</p>
+          </div>
+        </div>
+        <button onclick="closeDownloadHubModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 space-y-2">
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Suositeltu • Helpoin</span>
+          <h4 class="font-display font-bold text-base text-white">1. Koko sivusto yhdessä tiedostossa</h4>
+          <p class="text-xs text-slate-300">Ei vaadi ZIP-kansion purkamista. Tuplaklikkaa ladattua tiedostoa, niin se aukeaa suoraan selaimessa!</p>
+          <button onclick="downloadStandaloneHTML()" class="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs cursor-pointer">
+            📥 Lataa o_jarjesto_4k_sivusto.html
+          </button>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-sky-950/50 border border-sky-500/40 space-y-2">
+          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">Kansiorakenne</span>
+          <h4 class="font-display font-bold text-base text-white">2. Sivuston kansio (.ZIP)</h4>
+          <p class="text-xs text-slate-300">Sisältää erilliset <code>index.html</code>, <code>style.css</code>, <code>script.js</code> ja <code>LUE_MINUT.txt</code> -tiedostot.</p>
+          <button onclick="downloadWebsiteZip()" class="w-full py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-display font-extrabold text-xs cursor-pointer">
+            📦 Lataa o_jarjesto_kansio.zip
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-900 border border-white/10 space-y-3">
+        <h4 class="font-display font-bold text-sm text-white">3. Lataa kansion tiedostot yksitellen (ilman ZIP-tiedostoa):</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button onclick="downloadSinglePart('index.html')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer">
+            <i class="fa-brands fa-html5 text-orange-400 text-base"></i> Lataa index.html
+          </button>
+          <button onclick="downloadSinglePart('style.css')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer">
+            <i class="fa-brands fa-css3-alt text-sky-400 text-base"></i> Lataa style.css
+          </button>
+          <button onclick="downloadSinglePart('script.js')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/10 cursor-pointer">
+            <i class="fa-brands fa-js text-amber-400 text-base"></i> Lataa script.js
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <button onclick="copyFullWebsiteCode()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-extrabold text-xs cursor-pointer">
+          📋 Kopioi koko HTML-koodi leikepöydälle
+        </button>
+        <span id="modalDownloadStatus" class="text-xs font-bold text-emerald-400"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS TOAST NOTIFICATION -->
+  <div id="statusToast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 hidden px-6 py-3 rounded-2xl bg-emerald-500 text-slate-950 font-display font-extrabold text-sm shadow-2xl border-2 border-white">
+    ✅ Lataus käynnistetty!
+  </div>
+
+  <!-- ==========================================
+       MAIN JAVASCRIPT LOGIC & DOWNLOAD ENGINE
+       ========================================== -->
+  
+
+
+  <script src="script.js"></script>
+</body>
+</html>

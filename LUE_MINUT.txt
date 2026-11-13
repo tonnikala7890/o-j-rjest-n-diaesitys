@@ -1,0 +1,12 @@
+O-JÄRJESTÖ 4K VERKKOSIVUSTO (10 DIAA)
+======================================
+Timin numero: +358 44 9854292
+Virallinen lähde: https://yritysjarjesto-c84810.webnode.fi/
+
+Kansion tiedostot:
+- index.html : Sivuston rakenne ja kaikki 10 diaa
+- style.css  : 4K-tyylit, kutsukirje ja tornado-animaatiot
+- script.js  : Tornado-siirtymä, ääniefektit, mureneva tonnikala ja hyökkäävä iso kala
+
+Käyttöohje:
+Avaa "index.html" tuplaklikkaamalla missä tahansa selaimessa!

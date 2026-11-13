@@ -1,0 +1,148 @@
+:root {
+      --bg-deep: #020617;
+      --gold-primary: #f59e0b;
+      --gold-light: #fde68a;
+      --cyan-glow: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at 50% 15%, #0f172a 0%, #030712 65%, #010309 100%);
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+    .font-serif-luxury { font-family: 'Cinzel', serif; }
+    .font-letter { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* 4K Luxury Glassmorphism */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.76);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .glass-gold {
+      background: linear-gradient(135deg, rgba(35, 28, 14, 0.88) 0%, rgba(15, 23, 42, 0.92) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      box-shadow: 0 20px 50px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(253, 230, 138, 0.3);
+    }
+
+    /* Realistic Parchment Paper for Slide 1 */
+    .luxury-letter {
+      background: radial-gradient(circle at 50% 30%, #fffdf9 0%, #f7f1e3 65%, #eadbc0 100%);
+      color: #1e293b;
+      box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(217, 119, 6, 0.45),
+        inset 0 0 40px rgba(180, 130, 70, 0.2);
+      position: relative;
+    }
+
+    .luxury-letter::before {
+      content: '';
+      position: absolute;
+      inset: 10px;
+      border: 2px double rgba(180, 83, 9, 0.35);
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    /* Wax Seal */
+    .wax-seal {
+      background: radial-gradient(circle at 35% 30%, #ef4444 0%, #b91c1c 45%, #7f1d1d 85%, #450a0a 100%);
+      box-shadow: 
+        0 8px 20px rgba(0,0,0,0.6),
+        inset 0 3px 6px rgba(255,255,255,0.35),
+        inset 0 -4px 8px rgba(0,0,0,0.6);
+      border: 3px dashed rgba(252, 165, 165, 0.35);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .wax-seal:hover {
+      transform: scale(1.1) rotate(8deg);
+    }
+
+    /* Tornado Swirl Entrance Animation for Every Slide */
+    @keyframes tornadoSlideIn {
+      0% {
+        opacity: 0;
+        transform: perspective(1200px) scale(0.2) rotateY(540deg) rotateZ(-25deg) translateY(120px);
+        filter: blur(18px) brightness(1.8);
+      }
+      65% {
+        opacity: 1;
+        transform: perspective(1200px) scale(1.02) rotateY(-12deg) rotateZ(2deg) translateY(-6px);
+        filter: blur(1px) brightness(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1200px) scale(1) rotateY(0deg) rotateZ(0deg) translateY(0);
+        filter: blur(0px) brightness(1);
+      }
+    }
+
+    .tornado-enter {
+      animation: tornadoSlideIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Continuous Spinning Tornado Icon */
+    @keyframes tornadoSpin {
+      0% { transform: rotate(0deg) scaleX(1); }
+      50% { transform: rotate(180deg) scaleX(0.82); }
+      100% { transform: rotate(360deg) scaleX(1); }
+    }
+    .spin-tornado {
+      animation: tornadoSpin 1.5s linear infinite;
+    }
+
+    /* Violent Shake for Raging Tuna */
+    @keyframes rageShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1.12); }
+      15% { transform: translate(-16px, -10px) rotate(-6deg) scale(1.18); }
+      30% { transform: translate(16px, 8px) rotate(6deg) scale(1.22); }
+      45% { transform: translate(-18px, 12px) rotate(-7deg) scale(1.25); }
+      60% { transform: translate(16px, -12px) rotate(7deg) scale(1.2); }
+      75% { transform: translate(-14px, 10px) rotate(-5deg) scale(1.23); }
+      90% { transform: translate(12px, -8px) rotate(5deg) scale(1.16); }
+    }
+    .rage-shaking {
+      animation: rageShake 0.14s infinite;
+      filter: drop-shadow(0 0 40px #ef4444) hue-rotate(-45deg) saturate(4.5) !important;
+    }
+
+    /* Custom Scrollbar */
+    .slide-scroll::-webkit-scrollbar { width: 6px; }
+    .slide-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
+    .slide-scroll::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.45); border-radius: 9999px; }
+
+    /* Flying Tuna Shards */
+    .tuna-shard {
+      position: absolute;
+      pointer-events: none;
+      z-index: 40;
+      border-radius: 6px;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.85);
+    }
+
+    /* Giant Fish Bite Screen */
+    @keyframes bloodPulse {
+      0% { background-color: rgba(239, 68, 68, 0.95); transform: scale(1.25); }
+      40% { background-color: rgba(127, 29, 29, 0.98); transform: scale(1); }
+      100% { background-color: rgba(4, 1, 2, 0.98); transform: scale(1); }
+    }
+    .eaten-anim {
+      animation: bloodPulse 0.65s ease-out forwards;
+    }
